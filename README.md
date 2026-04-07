@@ -44,19 +44,19 @@ python advanced/main.py
 
 | Feature | Original | Advanced |
 |---------|----------|---------|
-| POST a pixel | ✅ (hardcoded dates) | ✅ (today, interactive) |
-| PUT (update) a pixel | ✅ | ✅ (any date) |
-| DELETE a pixel | ✅ | ✅ (with confirmation) |
-| Create user | ✅ | ✅ |
-| Create graph | ✅ | ✅ |
-| Show graph URL | ✅ | ✅ |
-| Custom HTTP headers | ✅ | ✅ |
-| Credentials from `.env` | Partial (os.getenv with fallback) | ✅ (no fallback) |
-| Input validation | ❌ | ✅ (regex + positive-float check) |
-| Interactive CLI menu | ❌ | ✅ |
-| OOP (`PixelaClient`) | ❌ | ✅ |
-| Graceful HTTP error handling | Partial | ✅ |
-| `requests.Session` | ✅ | ✅ |
+| POST a pixel | ✓ (hardcoded dates) | ✓ (today, interactive) |
+| PUT (update) a pixel | ✓ | ✓ (any date) |
+| DELETE a pixel | ✓ | ✓ (with confirmation) |
+| Create user | ✓ | ✓ |
+| Create graph | ✓ | ✓ |
+| Show graph URL | ✓ | ✓ |
+| Custom HTTP headers | ✓ | ✓ |
+| Credentials from `.env` | Partial (os.getenv with fallback) | ✓ (no fallback) |
+| Input validation | ✗ | ✓ (regex + positive-float check) |
+| Interactive CLI menu | ✗ | ✓ |
+| OOP (`PixelaClient`) | ✗ | ✓ |
+| Graceful HTTP error handling | Partial | ✓ |
+| `requests.Session` | ✓ | ✓ |
 
 ---
 
