@@ -83,22 +83,22 @@ def _call(action: str, fn, *args, **kwargs) -> None:
 # ------------------------------------------------------------------ #
 
 def log_today(client: PixelaClient) -> None:
-    quantity = _prompt_quantity("  Quantity to log (e.g. 5.2 Km): ")
+    quantity = _prompt_quantity(f"  Today's quantity ({GRAPH_UNIT}): ")
     date_str = datetime.now().strftime(DATE_FORMAT)
-    _call("Log today", client.post_pixel, GRAPH_ID, date_str, quantity)
+    _call("Logged", client.post_pixel, GRAPH_ID, date_str, quantity)
 
 
 def update_pixel(client: PixelaClient) -> None:
     date_str = _prompt_date("  Date to update (YYYYMMDD): ")
-    quantity = _prompt_quantity("  New quantity: ")
-    _call("Update pixel", client.update_pixel, GRAPH_ID, date_str, quantity)
+    quantity = _prompt_quantity(f"  New quantity ({GRAPH_UNIT}): ")
+    _call("Updated", client.update_pixel, GRAPH_ID, date_str, quantity)
 
 
 def delete_pixel(client: PixelaClient) -> None:
     date_str = _prompt_date("  Date to delete (YYYYMMDD): ")
-    confirm = input(f"  Delete pixel for {datetime.strptime(date_str, DATE_FORMAT).strftime(DATE_DISPLAY)}? [y/N]: ").strip().lower()
+    confirm = input(f"  Delete entry for {datetime.strptime(date_str, DATE_FORMAT).strftime(DATE_DISPLAY)}? [y/N]: ").strip().lower()
     if confirm == "y":
-        _call("Delete pixel", client.delete_pixel, GRAPH_ID, date_str)
+        _call("Deleted", client.delete_pixel, GRAPH_ID, date_str)
     else:
         print("  Cancelled.")
 
@@ -110,8 +110,8 @@ def show_graph_url(client: PixelaClient) -> None:
 
 MENU = {
     "1": ("Log today's activity", log_today),
-    "2": ("Update a past pixel", update_pixel),
-    "3": ("Delete a past pixel", delete_pixel),
+    "2": ("Update a past entry", update_pixel),
+    "3": ("Delete a past entry", delete_pixel),
     "4": ("Show graph URL", show_graph_url),
 }
 
@@ -124,7 +124,7 @@ def main() -> None:
     _validate_credentials()
     client = PixelaClient(USERNAME, TOKEN)
 
-    print(f"\nPixela Habit Tracker — graph: {GRAPH_NAME} ({GRAPH_UNIT})")
+    print(f"\nPixela Habit Tracker — {GRAPH_NAME} ({GRAPH_UNIT})")
     print(f"User: {USERNAME}  |  Graph: {GRAPH_ID}\n")
 
     while True:

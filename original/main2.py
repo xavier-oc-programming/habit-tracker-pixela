@@ -38,6 +38,10 @@ def _session(headers: Dict[str, str]) -> requests.Session:
 
 def _print_result(action: str, resp: requests.Response) -> None:
     """Print a concise, useful line for each API call."""
+    if resp.status_code == 409:
+        # 409 = resource already exists; expected for idempotent setup steps
+        print(f"{action} (already exists — skipping)")
+        return
     try:
         resp.raise_for_status()
         print(f"{action}: {resp.text}")
@@ -124,7 +128,14 @@ def main() -> None:
 
     # 3) Post today's pixel
     today_str = datetime.now().strftime("%Y%m%d")
-    post_pixel(s, USERNAME, GRAPH_ID, today_str, quantity="12")
+    while True:
+        quantity = input("How many Km did you run today? ").strip()
+        try:
+            float(quantity)
+            break
+        except ValueError:
+            print("Enter a number, e.g. 15 or 15.5")
+    post_pixel(s, USERNAME, GRAPH_ID, today_str, quantity=quantity)
 
     # 4) Show where to view the graph
     graph_url = f"{PIXELA_BASE}/{USERNAME}/graphs/{GRAPH_ID}.html"
