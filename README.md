@@ -68,7 +68,7 @@ python advanced/main.py
 python original/main2.py
 ```
 
-Runs six sequential steps automatically: create user → create graph → post today's pixel → show graph URL. Edit the constants at the top of the file to change graph settings.
+Runs sequentially: create user → create graph → prompt for today's quantity → post pixel → show graph URL. If the user or graph already exist, skips them silently. Edit the constants at the top of the file to change graph settings.
 
 ### Advanced build
 
@@ -79,19 +79,19 @@ python advanced/main.py
 Launches an interactive CLI:
 
 ```
-Pixela Habit Tracker — graph: Running Graph (Km)
+Pixela Habit Tracker — Running Graph (Km)
 User: yourname  |  Graph: graph1
 
 What would you like to do?
   1 — Log today's activity
-  2 — Update a past pixel
-  3 — Delete a past pixel
+  2 — Update a past entry
+  3 — Delete a past entry
   4 — Show graph URL
   q — Quit
 
 > 1
-  Quantity to log (e.g. 5.2 Km): 8.5
-  Log today: Success.
+  Today's quantity (Km): 8.5
+  Logged: Success.
 ```
 
 ---
@@ -107,7 +107,7 @@ What would you like to do?
   → PixelaClient.__init__() builds a requests.Session with X-USER-TOKEN header
 
 User input (menu choice + quantity/date)
-  → input validation (_prompt_quantity / _prompt_date)
+  → input validation (_prompt_quantity loops until valid number; _prompt_date loops until valid YYYYMMDD)
   → PixelaClient method called with validated params
   → HTTP request sent to https://pixe.la/v1/users/{username}/graphs/{graph_id}[/{date}]
   → Pixela API returns JSON {"isSuccess": true, "message": "..."} or error
@@ -137,9 +137,11 @@ Data at each stage:
 
 ### Advanced only
 
-**Interactive CLI.** A looping menu lets the user choose an action on each run instead of editing the script directly.
+**Interactive CLI.** A looping menu lets the user choose an action on each run instead of editing the script directly. Labels are unit-agnostic — set `GRAPH_UNIT` in `config.py` and all prompts update automatically.
 
 **Input validation.** Username checked against Pixela's documented regex. Date prompts loop until a valid `YYYYMMDD` string is entered. Quantity prompts loop until a positive number is entered.
+
+**409 handling (original build).** Pixela returns 409 when a user or graph already exists. Both builds treat this as a silent skip rather than an error, so re-running never produces spurious failure output.
 
 **Graceful error handling.** Each API call is wrapped in a try/except that prints the HTTP status and body on failure without crashing the program.
 
@@ -169,16 +171,17 @@ Start
        ├─ invalid → ValueError, exit
        └─ valid → build PixelaClient
             └─ show menu loop
-                 ├─ 1: Log today
-                 │     └─ prompt quantity → POST /graphs/{id}
-                 │           ├─ 2xx → print success message
-                 │           └─ 4xx/5xx → print error, continue loop
-                 ├─ 2: Update pixel
+                 ├─ 1: Log today's activity
+                 │     └─ prompt quantity (retry until positive number)
+                 │           → POST /graphs/{id}
+                 │                 ├─ 2xx → "Logged: Success."
+                 │                 └─ 4xx/5xx → print error, continue loop
+                 ├─ 2: Update a past entry
                  │     └─ prompt date (retry until valid YYYYMMDD)
-                 │           └─ prompt quantity → PUT /graphs/{id}/{date}
-                 │                 ├─ 2xx → print success
+                 │           → prompt quantity → PUT /graphs/{id}/{date}
+                 │                 ├─ 2xx → "Updated: Success."
                  │                 └─ error → print error, continue
-                 ├─ 3: Delete pixel
+                 ├─ 3: Delete a past entry
                  │     └─ prompt date → prompt confirmation
                  │           ├─ y → DELETE /graphs/{id}/{date}
                  │           └─ other → "Cancelled."
