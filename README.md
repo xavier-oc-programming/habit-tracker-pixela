@@ -6,6 +6,7 @@ Posts daily habit pixels to Pixela to track activity like running distance over 
 
 ## Table of Contents
 
+0. [Prerequisites](#0-prerequisites)
 1. [Quick start](#1-quick-start)
 2. [Builds comparison](#2-builds-comparison)
 3. [Usage](#3-usage)
@@ -20,6 +21,84 @@ Posts daily habit pixels to Pixela to track activity like running distance over 
 12. [Design decisions](#12-design-decisions)
 13. [Course context](#13-course-context)
 14. [Dependencies](#14-dependencies)
+
+---
+
+## 0. Prerequisites
+
+### Python
+
+Python 3.8 or higher is required. Check your version:
+
+```bash
+python --version   # or python3 --version
+```
+
+Download from [python.org](https://www.python.org/downloads/) if needed.
+
+---
+
+### Pixela account
+
+Pixela is an API-based habit graph service — there is no web sign-up form. Your account is created by making a POST request to the API, which the script does for you automatically on first run. Before running anything, you need to decide two things:
+
+#### 1. Choose a username
+
+Your Pixela username must:
+- Start with a lowercase letter (`a`–`z`)
+- Contain only lowercase letters, digits (`0`–`9`), and hyphens (`-`)
+- Be between 2 and 33 characters total
+- Be globally unique across all Pixela users — if it is already taken, the API returns a 409 and asks you to pick another
+
+Examples of valid usernames: `johndoe`, `jane-smith`, `runner42`
+
+#### 2. Choose a token
+
+Your token is a password used to authenticate every API request via the `X-USER-TOKEN` header. It must:
+- Be between 8 and 128 characters
+- Contain only printable ASCII characters (letters, digits, symbols)
+- Be kept secret — anyone with your token can post, update, or delete your pixels
+
+Pick any strong string, e.g. `myS3cur3T0k3n!`. There is no recovery mechanism — if you lose your token, you cannot access your account. Store it somewhere safe.
+
+#### 3. What the script creates on first run
+
+When you run either build for the first time, it will:
+
+1. **Create your Pixela user account** using the username and token you provide. This only needs to happen once — on subsequent runs the API returns "already exists" and the script skips it silently.
+2. **Create a graph** (`graph1` by default, named "Running Graph" with unit "Km"). Again, only happens once — subsequent runs skip it silently.
+3. **Post today's pixel** using the quantity you enter.
+
+You do not need to do anything on the Pixela website. The entire setup is handled via the API.
+
+#### 4. View your graph
+
+After the first successful run, your graph is publicly visible at:
+
+```
+https://pixe.la/v1/users/{your-username}/graphs/graph1.html
+```
+
+The script prints this URL at the end of every run (option 4 in the advanced build).
+
+---
+
+### Environment setup
+
+Copy `.env.example` to `.env` and fill in the username and token you chose above:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set:
+
+```
+PIXELA_USERNAME=your-chosen-username
+PIXELA_TOKEN=your-chosen-token
+```
+
+The `.env` file is gitignored and will never be committed. The advanced build validates both values before making any network request — an invalid username format or a token shorter than 8 characters will raise an error immediately with an explanation.
 
 ---
 
