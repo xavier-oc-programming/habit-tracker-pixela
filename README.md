@@ -83,25 +83,6 @@ The script prints this URL at the end of every run (option 4 in the advanced bui
 
 ---
 
-### Environment setup
-
-Copy `.env.example` to `.env` and fill in the username and token you chose above:
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and set:
-
-```
-PIXELA_USERNAME=your-chosen-username
-PIXELA_TOKEN=your-chosen-token
-```
-
-The `.env` file is gitignored and will never be committed. The advanced build validates both values before making any network request — an invalid username format or a token shorter than 8 characters will raise an error immediately with an explanation.
-
----
-
 ## 1. Quick start
 
 ```bash
