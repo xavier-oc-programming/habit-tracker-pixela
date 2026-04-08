@@ -26,18 +26,6 @@ Posts daily habit pixels to Pixela to track activity like running distance over 
 
 ## 0. Prerequisites
 
-### Python
-
-Python 3.8 or higher is required. Check your version:
-
-```bash
-python --version   # or python3 --version
-```
-
-Download from [python.org](https://www.python.org/downloads/) if needed.
-
----
-
 ### Pixela account
 
 Pixela is an API-based habit graph service — there is no web sign-up form. Your account is created by making a POST request to the API, which the script does for you automatically on first run. Before running anything, you need to decide two things:
